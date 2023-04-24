@@ -2,77 +2,212 @@
 #include <stdio.h>
 
 /**
- * rev_string - reverses a string in place
- *
- * @s: string to reverse
- * Return: A pointer to a character
+ * print_hex - prints a decimal in hexadecimal
+ * @arguments: input string
+ * @buf: buffer pointer
+ * @ibuf: index for buffer pointer
+ * Return: number of chars printed
  */
-char *rev_string(char *s)
+int print_hex(va_list arguments, char *buf, unsigned int ibuf)
 {
-	int len;
-	int head;
-	char tmp;
-	char *dest;
+	int int_input, i, isnegative, count, first_digit;
+	char *hexadecimal, *binary;
 
-	for (len = 0; s[len] != '\0'; len++)
-	{}
-
-	dest = malloc(sizeof(char) * len + 1);
-	if (dest == NULL)
-		return (NULL);
-
-	_memcpy(dest, s, len);
-	for (head = 0; head < len; head++, len--)
+	int_input = va_arg(arguments, int);
+	isnegative = 0;
+	if (int_input == 0)
 	{
-		tmp = dest[len - 1];
-		dest[len - 1] = dest[head];
-		dest[head] = tmp;
+		ibuf = handl_buf(buf, '0', ibuf);
+		return (1);
 	}
-	return (dest);
-}
-
-/**
- * write_base - sends characters to be written on standard output
- * @str: String to parse
- */
-void write_base(char *str)
-{
-	int i;
-
-	for (i = 0; str[i] != '\0'; i++)
-		_write_char(str[i]);
-}
-
-/**
- * base_len - Calculates the length for an octal number
- * @num: The number for which the length is being calculated
- * @base: Base to be calculated by
- * Return: An integer representing the length of a number
- */
-unsigned int base_len(unsigned int num, int base)
-{
-	unsigned int i;
-
-	for (i = 0; num > 0; i++)
+	if (int_input < 0)
 	{
-		num = num / base;
+		int_input = (int_input * -1) - 1;
+		isnegative = 1;
 	}
-	return (i);
+	binary = malloc(sizeof(char) * (32 + 1));
+	binary = fill_binary_array(binary, int_input, isnegative, 32);
+	hexadecimal = malloc(sizeof(char) * (8 + 1));
+	hexadecimal = fill_hex_array(binary, hexadecimal, 0, 8);
+	for (first_digit = i = count = 0; hexadecimal[i]; i++)
+	{
+		if (hexadecimal[i] != '0' && first_digit == 0)
+			first_digit = 1;
+		if (first_digit)
+		{
+			ibuf = handl_buf(buf, hexadecimal[i], ibuf);
+			count++;
+		}
+	}
+	free(binary);
+	free(hexadecimal);
+	return (count);
 }
 
 /**
- * _memcpy - copy memory area
- * @dest: Destination for copying
- * @src: Source to copy from
- * @n: The number of bytes to copy
- * Return: The _memcpy() function returns a pointer to dest.
+ * print_int - prints an integer
+ * @arguments: input string
+ * @buf: buffer pointer
+ * @ibuf: index for buffer pointer
+ * Return: number of chars printed.
  */
-char *_memcpy(char *dest, char *src, unsigned int n)
+int print_int(va_list arguments, char *buf, unsigned int ibuf)
 {
-	unsigned int i;
+	int int_input;
+	unsigned int int_in, int_temp, i, div, isneg;
 
-	for (i = 0; i < n; i++)
-		dest[i] = src[i];
-	dest[i] = '\0';
-	return (dest);
+	int_input = va_arg(arguments, int);
+	isneg = 0;
+	if (int_input < 0)
+	{
+		int_in = int_input * -1;
+		ibuf = handl_buf(buf, '-', ibuf);
+		isneg = 1;
+	}
+	else
+	{
+		int_in = int_input;
+	}
+
+	int_temp = int_in;
+	div = 1;
+
+	while (int_temp > 9)
+	{
+		div *= 10;
+		int_temp /= 10;
+	}
+
+	for (i = 0; div > 0; div /= 10, i++)
+	{
+		ibuf = handl_buf(buf, ((int_in / div) % 10) + '0', ibuf);
+	}
+	return (i + isneg);
+}
+
+/**
+ * prinlhex - prints a long decimal in hexadecimal
+ * @arguments: input string
+ * @buf: buffer pointer
+ * @ibuf: index for buffer pointer
+ * Return: number of chars printed
+ */
+int prinlhex(va_list arguments, char *buf, unsigned int ibuf)
+{
+	long int int_input, i, isnegative, count, first_digit;
+	char *hexadecimal, *binary;
+
+	int_input = va_arg(arguments, long int);
+	isnegative = 0;
+	if (int_input == 0)
+	{
+		ibuf = handl_buf(buf, '0', ibuf);
+		return (1);
+	}
+	if (int_input < 0)
+	{
+		int_input = (int_input * -1) - 1;
+		isnegative = 1;
+	}
+
+	binary = malloc(sizeof(char) * (64 + 1));
+	binary = fill_binary_array(binary, int_input, isnegative, 64);
+	hexadecimal = malloc(sizeof(char) * (16 + 1));
+	hexadecimal = fill_hex_array(binary, hexadecimal, 0, 16);
+	for (first_digit = i = count = 0; hexadecimal[i]; i++)
+	{
+		if (hexadecimal[i] != '0' && first_digit == 0)
+			first_digit = 1;
+		if (first_digit)
+		{
+			ibuf = handl_buf(buf, hexadecimal[i], ibuf);
+			count++;
+		}
+	}
+	free(binary);
+	free(hexadecimal);
+	return (count);
+}
+
+/**
+ * prinlint - prints a long integer
+ * @arguments: input string
+ * @buf: buffer pointer
+ * @ibuf: index for buffer pointer
+ * Return: number of chars printed.
+ */
+int prinlint(va_list arguments, char *buf, unsigned int ibuf)
+{
+	long int int_input;
+	unsigned long int int_in, int_temp, i, div, isneg;
+
+	int_input = va_arg(arguments, long int);
+	isneg = 0;
+	if (int_input < 0)
+	{
+		int_in = int_input * -1;
+		ibuf = handl_buf(buf, '-', ibuf);
+		isneg = 1;
+	}
+	else
+	{
+		int_in = int_input;
+	}
+
+	int_temp = int_in;
+	div = 1;
+	while (int_temp > 9)
+	{
+		div *= 10;
+		int_temp /= 10;
+	}
+	for (i = 0; div > 0; div /= 10, i++)
+	{
+		ibuf = handl_buf(buf, ((int_in / div) % 10) + '0', ibuf);
+	}
+	return (i + isneg);
+}
+
+/**
+ * prinloct - prints long decimal number in octal
+ * @arguments: input number
+ * @buf: buffer pointer
+ * @ibuf: index for buffer pointer
+ * Return: number of chars printed.
+ */
+int prinloct(va_list arguments, char *buf, unsigned int ibuf)
+{
+	long int int_input, i, isnegative, count, first_digit;
+	char *octal, *binary;
+
+	int_input = va_arg(arguments, long int);
+	isnegative = 0;
+	if (int_input == 0)
+	{
+		ibuf = handl_buf(buf, '0', ibuf);
+		return (1);
+	}
+	if (int_input < 0)
+	{
+		int_input = (int_input * -1) - 1;
+		isnegative = 1;
+	}
+
+	binary = malloc(sizeof(char) * (64 + 1));
+	binary = fill_binary_array(binary, int_input, isnegative, 64);
+	octal = malloc(sizeof(char) * (22 + 1));
+	octal = fill_long_oct_array(binary, octal);
+	for (first_digit = i = count = 0; octal[i]; i++)
+	{
+		if (octal[i] != '0' && first_digit == 0)
+			first_digit = 1;
+		if (first_digit)
+		{
+			ibuf = handl_buf(buf, octal[i], ibuf);
+			count++;
+		}
+	}
+	free(binary);
+	free(octal);
+	return (count);
 }
