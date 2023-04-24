@@ -1,14 +1,15 @@
-#include "main.h"
+#include "holberton.h"
 
 /**
- * _printf - Receives the main string and all parameters
+ * _printf - Receives the main string and all the necessary parameters to
+ * print a formated string
  * @format: A string containing all the desired characters
  * Return: A total count of the characters printed
  */
 int _printf(const char *format, ...)
 {
-	int char_nums;
-	switch_va switch_case[] = {
+	int printed_chars;
+	conver_t f_list[] = {
 		{"c", print_char},
 		{"s", print_string},
 		{"%", print_percent},
@@ -23,14 +24,14 @@ int _printf(const char *format, ...)
 		{"X", print_heX},
 		{NULL, NULL}
 	};
-	va_list varList;
+	va_list arg_list;
 
 	if (format == NULL)
 		return (-1);
 
-	va_start(varList, format);
-
-	char_nums = decode(format, switch_case, varList);
-	va_end(varList);
-	return (char_nums);
+	va_start(arg_list, format);
+	/*Calling parser function*/
+	printed_chars = parser(format, f_list, arg_list);
+	va_end(arg_list);
+	return (printed_chars);
 }
