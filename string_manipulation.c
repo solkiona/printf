@@ -1,56 +1,166 @@
 #include "main.h"
 
 /**
- * print_reversed - Calls a function to reverse and print a string
- * @arg: Argument passed to the function
- * Return: The amount of characters printed
+ * prinhunt - prints a short unsigned integer
+ * @arguments: number to print
+ * @buf: buffer pointer
+ * @ibuf: index for buffer pointer
+ * Return: number of chars printed.
  */
-int print_reversed(va_list arg)
+int prinhunt(va_list arguments, char *buf, unsigned int ibuf)
 {
-	int len;
-	char *str;
-	char *ptr;
+	unsigned short int int_in, int_temp, i, div;
 
-	str = va_arg(arg, char *);
-	if (str == NULL)
-		return (-1);
-	ptr = rev_string(str);
-	if (ptr == NULL)
-		return (-1);
-	for (len = 0; ptr[len] != '\0'; len++)
-		_write_char(ptr[len]);
-	free(ptr);
-	return (len);
+	int_in = va_arg(arguments, unsigned int);
+
+	int_temp = int_in;
+	div = 1;
+
+	while (int_temp > 9)
+	{
+		div *= 10;
+		int_temp /= 10;
+	}
+
+	for (i = 0; div > 0; div /= 10, i++)
+	{
+		ibuf = handl_buf(buf, ((int_in / div) % 10) + '0', ibuf);
+	}
+	return (i);
 }
 
 /**
- * rot13 - Converts string to rot13
- * @list: string to convert
- * Return: converted string
+ * prinhupx - prints a short decimal in hexadecimal
+ * @arguments: The character to print
+ * @buf: buffer pointer
+ * @ibuf: index for buffer pointer
+ * Return: number of chars printed
  */
-int rot13(va_list list)
+int prinhupx(va_list arguments, char *buf, unsigned int ibuf)
 {
-	int i;
-	int x;
-	char *str;
-	char s[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-	char u[] = "NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm";
+	short int int_input, i, isnegative, count, first_digit;
+	char *hexadecimal, *binary;
 
-	str = va_arg(list, char *);
-	if (str == NULL)
-		return (-1);
-	for (i = 0; str[i] != '\0'; i++)
+	int_input = va_arg(arguments, int);
+	isnegative = 0;
+
+	if (int_input == 0)
 	{
-		for (x = 0; x <= 52; x++)
+		ibuf = handl_buf(buf, '0', ibuf);
+		return (1);
+	}
+	if (int_input < 0)
+	{
+		int_input = (int_input * -1) - 1;
+		isnegative = 1;
+	}
+
+	binary = malloc(sizeof(char) * (16 + 1));
+	binary = fill_binary_array(binary, int_input, isnegative, 16);
+	hexadecimal = malloc(sizeof(char) * (4 + 1));
+	hexadecimal = fill_hex_array(binary, hexadecimal, 1, 4);
+
+	for (first_digit = i = count = 0; hexadecimal[i]; i++)
+	{
+		if (hexadecimal[i] != '0' && first_digit == 0)
+			first_digit = 1;
+		if (first_digit)
 		{
-			if (str[i] == s[x])
-			{
-				_write_char(u[x]);
-				break;
-			}
+			ibuf = handl_buf(buf, hexadecimal[i], ibuf);
+			count++;
 		}
-		if (x == 53)
-			_write_char(str[i]);
+	}
+
+	free(binary);
+	free(hexadecimal);
+
+	return (count);
+}
+
+/**
+ * prinsint - prints int begining with space
+ * @arguments: input string
+ * @buf: buffer pointer
+ * @ibuf: index for buffer pointer
+ * Return: number of chars printed
+ */
+int prinsint(va_list arguments, char *buf, unsigned int ibuf)
+{
+	int int_input;
+	unsigned int int_in, int_temp, i, div;
+
+	int_input = va_arg(arguments, int);
+	if (int_input < 0)
+	{
+		int_in = int_input * -1;
+		ibuf = handl_buf(buf, '-', ibuf);
+	}
+	else
+	{
+		int_in = int_input;
+		ibuf = handl_buf(buf, ' ', ibuf);
+	}
+	int_temp = int_in;
+	div = 1;
+	while (int_temp > 9)
+	{
+		div *= 10;
+		int_temp /= 10;
+	}
+	for (i = 0; div > 0; div /= 10, i++)
+	{
+		ibuf = handl_buf(buf, ((int_in / div) % 10) + '0', ibuf);
+	}
+	return (i + 1);
+}
+
+/**
+ * print_str - writes the string to stdout
+ * @arguments: input string
+ * @buf: buffer pointer
+ * @ibuf: index for buffer pointer
+ * Return: On success 1.
+ */
+int print_str(va_list arguments, char *buf, unsigned int ibuf)
+{
+	char *str;
+	unsigned int i;
+	char nill[] = "(null)";
+
+	str = va_arg(arguments, char *);
+	if (str == NULL)
+	{
+		for (i = 0; nill[i]; i++)
+			ibuf = handl_buf(buf, nill[i], ibuf);
+		return (6);
+	}
+	for (i = 0; str[i]; i++)
+		ibuf = handl_buf(buf, str[i], ibuf);
+	return (i);
+}
+
+/**
+ * print_unt - prints an unsigned int
+ * @arguments: number to print
+ * @buf: buffer pointer
+ * @ibuf: index for buffer pointer
+ * Return: number of chars printed.
+ */
+int print_unt(va_list arguments, char *buf, unsigned int ibuf)
+{
+	unsigned int int_in, int_temp, i, div;
+
+	int_in = va_arg(arguments, unsigned int);
+	int_temp = int_in;
+	div = 1;
+	while (int_temp > 9)
+	{
+		div *= 10;
+		int_temp /= 10;
+	}
+	for (i = 0; div > 0; div /= 10, i++)
+	{
+		ibuf = handl_buf(buf, ((int_in / div) % 10) + '0', ibuf);
 	}
 	return (i);
 }
