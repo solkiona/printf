@@ -1,66 +1,198 @@
 #include "main.h"
 
 /**
- * print_number - prints a number send to this function
- * @args: List of arguments
- * Return: The number of arguments printed
+ * print_rev - writes the str in reverse
+ * @arguments: input string
+ * @buf: buffer pointer
+ * @ibuf: index for buffer pointer
+ * Return: number of chars printed.
  */
-int print_number(va_list args)
+int print_rev(va_list arguments, char *buf, unsigned int ibuf)
 {
-	int n;
-	int div;
-	int len;
-	unsigned int num;
+	char *str;
+	unsigned int i;
+	int j = 0;
+	char nill[] = "(llun)";
 
-	n  = va_arg(args, int);
-	div = 1;
-	len = 0;
-
-	if (n < 0)
+	str = va_arg(arguments, char *);
+	if (str == NULL)
 	{
-		len += _write_char('-');
-		num = n * -1;
+		for (i = 0; nill[i]; i++)
+			ibuf = handl_buf(buf, nill[i], ibuf);
+		return (6);
+	}
+	for (i = 0; str[i]; i++)
+		;
+	j = i - 1;
+	for (; j >= 0; j--)
+	{
+		ibuf = handl_buf(buf, str[j], ibuf);
+	}
+	return (i);
+}
+
+/**
+ * print_rot - writes the str in ROT13
+ * @arguments: input string
+ * @buf: buffer pointer
+ * @ibuf: index for buffer pointer
+ * Return: number of chars printed.
+ */
+
+int print_rot(va_list arguments, char *buf, unsigned int ibuf)
+{
+	char alf[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+	char rot[] = "NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm";
+	char *str;
+	unsigned int i, j, k;
+	char nill[] = "(avyy)";
+
+	str = va_arg(arguments, char *);
+	if (str == NULL)
+	{
+		for (i = 0; nill[i]; i++)
+			ibuf = handl_buf(buf, nill[i], ibuf);
+		return (6);
+	}
+	for (i = 0; str[i]; i++)
+	{
+		for (k = j = 0; alf[j]; j++)
+		{
+			if (str[i] == alf[j])
+			{
+				k = 1;
+				ibuf = handl_buf(buf, rot[j], ibuf);
+				break;
+			}
+		}
+		if (k == 0)
+			ibuf = handl_buf(buf, str[i], ibuf);
+	}
+	return (i);
+}
+
+/**
+ * prinhhex - prints a short decimal in hexadecimal
+ * @arguments: input string
+ * @buf: buffer pointer
+ * @ibuf: index for buffer pointer
+ * Return: number of chars printed
+ */
+int prinhhex(va_list arguments, char *buf, unsigned int ibuf)
+{
+	short int int_input, i, isnegative, count, first_digit;
+	char *hexadecimal, *binary;
+
+	int_input = va_arg(arguments, int);
+	isnegative = 0;
+	if (int_input == 0)
+	{
+		ibuf = handl_buf(buf, '0', ibuf);
+		return (1);
+	}
+	if (int_input < 0)
+	{
+		int_input = (int_input * -1) - 1;
+		isnegative = 1;
+	}
+
+	binary = malloc(sizeof(char) * (16 + 1));
+	binary = fill_binary_array(binary, int_input, isnegative, 16);
+	hexadecimal = malloc(sizeof(char) * (4 + 1));
+	hexadecimal = fill_hex_array(binary, hexadecimal, 0, 4);
+	for (first_digit = i = count = 0; hexadecimal[i]; i++)
+	{
+		if (hexadecimal[i] != '0' && first_digit == 0)
+			first_digit = 1;
+		if (first_digit)
+		{
+			ibuf = handl_buf(buf, hexadecimal[i], ibuf);
+			count++;
+		}
+	}
+	free(binary);
+	free(hexadecimal);
+	return (count);
+}
+
+/**
+ * prinhint - prints a short integer
+ * @arguments: input string
+ * @buf: buffer pointer
+ * @ibuf: index for buffer pointer
+ * Return: number of chars printed.
+ */
+int prinhint(va_list arguments, char *buf, unsigned int ibuf)
+{
+	short int int_input;
+	unsigned short int int_in, int_temp, i, div, isneg;
+
+	int_input = va_arg(arguments, int);
+	isneg = 0;
+	if (int_input < 0)
+	{
+		int_in = int_input * -1;
+		ibuf = handl_buf(buf, '-', ibuf);
+		isneg = 1;
 	}
 	else
-		num = n;
-
-	for (; num / div > 9; )
-		div *= 10;
-
-	for (; div != 0; )
 	{
-		len += _write_char('0' + num / div);
-		num %= div;
-		div /= 10;
+		int_in = int_input;
 	}
-
-	return (len);
-}
-/**
- * print_unsgined_number - Prints an unsigned number
- * @n: unsigned integer to be printed
- * Return: The amount of numbers printed
- */
-int print_unsgined_number(unsigned int n)
-{
-	int div;
-	int len;
-	unsigned int num;
-
+	int_temp = int_in;
 	div = 1;
-	len = 0;
-
-	num = n;
-
-	for (; num / div > 9; )
-		div *= 10;
-
-	for (; div != 0; )
+	while (int_temp > 9)
 	{
-		len += _write_char('0' + num / div);
-		num %= div;
-		div /= 10;
+		div *= 10;
+		int_temp /= 10;
+	}
+	for (i = 0; div > 0; div /= 10, i++)
+	{
+		ibuf = handl_buf(buf, ((int_in / div) % 10) + '0', ibuf);
+	}
+	return (i + isneg);
+}
+
+/**
+ * prinhoct - prints long decimal number in octal
+ * @arguments: input number
+ * @buf: buffer pointer
+ * @ibuf: index for buffer pointer
+ * Return: number of chars printed.
+ */
+int prinhoct(va_list arguments, char *buf, unsigned int ibuf)
+{
+	short int int_input, i, isnegative, count, first_digit;
+	char *octal, *binary;
+
+	int_input = va_arg(arguments, int);
+	isnegative = 0;
+	if (int_input == 0)
+	{
+		ibuf = handl_buf(buf, '0', ibuf);
+		return (1);
+	}
+	if (int_input < 0)
+	{
+		int_input = (int_input * -1) - 1;
+		isnegative = 1;
 	}
 
-	return (len);
+	binary = malloc(sizeof(char) * (16 + 1));
+	binary = fill_binary_array(binary, int_input, isnegative, 16);
+	octal = malloc(sizeof(char) * (6 + 1));
+	octal = fill_short_oct_array(binary, octal);
+	for (first_digit = i = count = 0; octal[i]; i++)
+	{
+		if (octal[i] != '0' && first_digit == 0)
+			first_digit = 1;
+		if (first_digit)
+		{
+			ibuf = handl_buf(buf, octal[i], ibuf);
+			count++;
+		}
+	}
+	free(binary);
+	free(octal);
+	return (count);
 }
