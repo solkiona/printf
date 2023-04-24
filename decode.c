@@ -1,52 +1,50 @@
 #include "main.h"
-
 /**
- * parser - Receives the main string and all the necessary parameters to
- * print a formated string.
- * @format: A string containing all the desired characters.
- * @f_list: A list of all the posible functions.
- * @arg_list: A list containing all the argumentents passed to the program.
- * Return: A total count of the characters printed.
+ * ev_print_func - returns the amount of identifiers.
+ * @s: argument indentifier
+ * @index: index of argument identifier.
+ * Return: amount of identifiers.
  */
-int parser(const char *format, conver_t f_list[], va_list arg_list)
+int ev_print_func(const char *s, int index)
 {
-	int i, j, r_val, printed_chars;
+	print_t pr[] = {
+		{"c", print_chr}, {"s", print_str}, {"i", print_int},
+		{"d", print_int}, {"b", print_bnr}, {"u", print_unt},
+		{"o", print_oct}, {"x", print_hex}, {"X", print_upx},
+		{"S", print_usr}, {"p", print_add}, {"li", prinlint},
+		{"ld", prinlint}, {"lu", prinlunt}, {"lo", prinloct},
+		{"lx", prinlhex}, {"lX", prinlupx}, {"hi", prinhint},
+		{"hd", prinhint}, {"hu", prinhunt}, {"ho", prinhoct},
+		{"hx", prinhhex}, {"hX", prinhupx}, {"#o", prinnoct},
+		{"#x", prinnhex}, {"#X", prinnupx}, {"#i", print_int},
+		{"#d", print_int}, {"#u", print_unt}, {"+i", prinpint},
+		{"+d", prinpint}, {"+u", print_unt}, {"+o", print_oct},
+		{"+x", print_hex}, {"+X", print_upx}, {" i", prinsint},
+		{" d", prinsint}, {" u", print_unt}, {" o", print_oct},
+		{" x", print_hex}, {" X", print_upx}, {"R", print_rot},
+		{"r", print_rev}, {"%", print_prg}, {"l", print_prg},
+		{"h", print_prg}, {" +i", prinpint}, {" +d", prinpint},
+		{"+ i", prinpint}, {"+ d", prinpint}, {" %", print_prg},
+		{NULL, NULL},
+	};
+	int i = 0, j = 0, first_index;
 
-	printed_chars = 0;
-	for (i = 0; format[i] != '\0'; i++)/* Iterates through the main str*/
+	first_index = index;
+	while (pr[i].type_arg)
 	{
-		if (format[i] == '%') /*Checks for format specifiers*/
+		if (s[index] == pr[i].type_arg[j])
 		{
-			/*Iterates through struct to find the right func*/
-			for (j = 0; f_list[j].sym != NULL; j++)
-			{
-				if (format[i + 1] == f_list[j].sym[0])
-				{
-					r_val = f_list[j].f(arg_list);
-					if (r_val == -1)
-						return (-1);
-					printed_chars += r_val;
-					break;
-				}
-			}
-			if (f_list[j].sym == NULL && format[i + 1] != ' ')
-			{
-				if (format[i + 1] != '\0')
-				{
-					_write_char(format[i]);
-					_write_char(format[i + 1]);
-					printed_chars = printed_chars + 2;
-				}
-				else
-					return (-1);
-			}
-			i = i + 1; /*Updating i to skip format symbols*/
+			if (pr[i].type_arg[j + 1] != '\0')
+				index++, j++;
+			else
+				break;
 		}
 		else
 		{
-			_write_char(format[i]); /*call the write function*/
-			printed_chars++;
+			j = 0;
+			i++;
+			index = first_index;
 		}
 	}
-	return (printed_chars);
+	return (j);
 }
