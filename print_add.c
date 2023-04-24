@@ -4,7 +4,7 @@
  * print_add - prints the address of a pointer
  * @list: address of pointer
  * Return: The number of printed characters
- */
+i */
 int print_add(va_list list)
 {
 	void *ptr = va_arg(list, void*);
@@ -19,7 +19,7 @@ int print_add(va_list list)
 		address /= 16;
 	} while (address != 0);
 
-	if (index >= PRINT_ADD_BUFFER_SIZE)
+	if (index >= 16)
 		return (-1);
 
 /*Print the string in reverse order*/
