@@ -1,6 +1,4 @@
 #include "main.h"
-#include <stdint.h>
-#define PRINT_ADD_BUFFER_SIZE 1024
 
 /**
  * print_add - prints the address of a pointer
@@ -10,7 +8,7 @@
 int print_add(va_list list)
 {
 	void *ptr = va_arg(list, void*);
-	char buffer[PRINT_ADD_BUFFER_SIZE];
+	char buffer[16];
 	int index = 0;
 /*Convert the pointer value to a string*/
 
