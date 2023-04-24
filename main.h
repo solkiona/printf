@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <stdint.h>
 
 /**
 * struct convert - defines a structure for symbols and functions
@@ -34,6 +35,7 @@ int unsigned_integer(va_list);
 int print_octal(va_list list);
 int print_hex(va_list list);
 int print_heX(va_list list);
+int print_add(va_list list);
 
 /*Helper functions*/
 unsigned int base_len(unsigned int, int);
