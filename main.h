@@ -6,20 +6,20 @@
 #include <stdarg.h>
 
 /**
-* struct switch_var - defines a structure for symbols and functions
+* struct convert - defines a structure for symbols and functions
 *
-* @_case: The operator
-* @call_func: The function associated
+* @sym: The operator
+* @f: The function associated
 */
-struct switch_var
+struct convert
 {
-	char *_case;
-	int (*call_func)(va_list);
+	char *sym;
+	int (*f)(va_list);
 };
-typedef struct switch_var switch_va;
+typedef struct convert conver_t;
 
 /*Main functions*/
-int decode(const char *format, switch_va switch_case[], va_list varList);
+int parser(const char *format, conver_t f_list[], va_list arg_list);
 int _printf(const char *format, ...);
 int _write_char(char);
 int print_char(va_list);
