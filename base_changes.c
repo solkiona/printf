@@ -1,193 +1,150 @@
 #include "main.h"
-#include <stdio.h>
-int hex_check(int, char);
 
 /**
- * print_binary - Converts a number from base 10 to binary
- * @list: List of arguments passed to this function
- * Return: The length of the number printed
+ * fill_binary_array - prints decimal in binary
+ * @binary: pointer to binary
+ * @int_in: input number
+ * @isneg: if input number is negative
+ * @limit: size of the binary
+ * Return: number of chars printed.
  */
-int print_binary(va_list list)
+char *fill_binary_array(char *binary, long int int_in, int isneg, int limit)
 {
-	unsigned int num;
-	int i, len;
-	char *str;
-	char *rev_str;
+	int i;
 
-	num = va_arg(list, unsigned int);
-	if (num == 0)
-		return (_write_char('0'));
-	if (num < 1)
-		return (-1);
-	len = base_len(num, 2);
-	str = malloc(sizeof(char) * len + 1);
-	if (str == NULL)
-		return (-1);
-
-	for (i = 0; num > 0; i++)
+	for (i = 0; i < limit; i++)
+		binary[i] = '0';
+	binary[limit] = '\0';
+	for (i = limit - 1; int_in > 1; i--)
 	{
-		if (num % 2 == 0)
-			str[i] = '0';
+		if (int_in == 2)
+			binary[i] = '0';
 		else
-			str[i] = '1';
-		num = num / 2;
+			binary[i] = (int_in % 2) + '0';
+		int_in /= 2;
 	}
-	str[i] = '\0';
-	rev_str = rev_string(str);
-	if (rev_str == NULL)
-		return (-1);
-	write_base(rev_str);
-	free(str);
-	free(rev_str);
-	return (len);
-}
-
-/**
- * print_octal - Prints the numeric representation of a number in octal base
- * @list: List of all the arguments passed to the program
- * Return: Number of symbols printed to stdout
- */
-int print_octal(va_list list)
-{
-	unsigned int num;
-	int len;
-	char *octal_rep;
-	char *rev_str;
-
-	num = va_arg(list, unsigned int);
-
-	if (num == 0)
-		return (_write_char('0'));
-	if (num < 1)
-		return (-1);
-	len = base_len(num, 8);
-
-	octal_rep = malloc(sizeof(char) * len + 1);
-	if (octal_rep == NULL)
-		return (-1);
-	for (len = 0; num > 0; len++)
+	if (int_in != 0)
+		binary[i] = '1';
+	if (isneg)
 	{
-		octal_rep[len] = (num % 8) + 48;
-		num = num / 8;
-
+		for (i = 0; binary[i]; i++)
+			if (binary[i] == '0')
+				binary[i] = '1';
+			else
+				binary[i] = '0';
 	}
-	octal_rep[len] = '\0';
-	rev_str = rev_string(octal_rep);
-	if (rev_str == NULL)
-		return (-1);
-
-	write_base(rev_str);
-	free(octal_rep);
-	free(rev_str);
-	return (len);
+	return (binary);
 }
 
 /**
- * print_hex - Prints a representation of a decimal number on base16 lowercase
- * @list: List of the arguments passed to the function
- * Return: Number of characters printed
+ * fill_hex_array - writes the character c to stdout
+ *
+ * @bnr: array where is stored the binary.
+ * @hex: array where is stored the hexadecimal.
+ * @isupp: integer that determines if the hexadecimal array is
+ * in uppercase or lowercase letter.
+ * @limit: size of hex
+ * Return: binary array.
  */
-int print_hex(va_list list)
+char *fill_hex_array(char *bnr, char *hex, int isupp, int limit)
 {
-	unsigned int num;
-	int len;
-	int rem_num;
-	char *hex_rep;
-	char *rev_hex;
+	int op, i, j, toletter;
 
-	num = va_arg(list, unsigned int);
-
-	if (num == 0)
-		return (_write_char('0'));
-	if (num < 1)
-		return (-1);
-	len = base_len(num, 16);
-	hex_rep = malloc(sizeof(char) * len + 1);
-	if (hex_rep == NULL)
-		return (-1);
-	for (len = 0; num > 0; len++)
-	{
-		rem_num = num % 16;
-		if (rem_num > 9)
-		{
-			rem_num = hex_check(rem_num, 'x');
-			hex_rep[len] = rem_num;
-		}
-		else
-			hex_rep[len] = rem_num + 48;
-		num = num / 16;
-	}
-	hex_rep[len] = '\0';
-	rev_hex = rev_string(hex_rep);
-	if (rev_hex == NULL)
-		return (-1);
-	write_base(rev_hex);
-	free(hex_rep);
-	free(rev_hex);
-	return (len);
-}
-
-
-/**
- * print_heX - Prints a representation of a decimal number on base16 Uppercase
- * @list: List of the arguments passed to the function
- * Return: Number of characters printed
- */
-int print_heX(va_list list)
-{
-	unsigned int num;
-	int len;
-	int rem_num;
-	char *hex_rep;
-	char *rev_hex;
-
-	num = va_arg(list, unsigned int);
-
-	if (num == 0)
-		return (_write_char('0'));
-	if (num < 1)
-		return (-1);
-	len = base_len(num, 16);
-	hex_rep = malloc(sizeof(char) * len + 1);
-	if (hex_rep == NULL)
-		return (-1);
-	for (len = 0; num > 0; len++)
-	{
-		rem_num = num % 16;
-		if (rem_num > 9)
-		{
-			rem_num = hex_check(rem_num, 'X');
-			hex_rep[len] = rem_num;
-		}
-		else
-			hex_rep[len] = rem_num + 48;
-		num = num / 16;
-	}
-	hex_rep[len] = '\0';
-	rev_hex = rev_string(hex_rep);
-	if (rev_hex == NULL)
-		return (-1);
-	write_base(rev_hex);
-	free(hex_rep);
-	free(rev_hex);
-	return (len);
-}
-
-/**
- * hex_check - Checks which hex function is calling it
- * @num: Number to convert into letter
- * @x: Tells which hex function is calling it
- * Return: Ascii value for a letter
- */
-int hex_check(int num, char x)
-{
-	char *hex = "abcdef";
-	char *Hex = "ABCDEF";
-
-	num = num - 10;
-	if (x == 'x')
-		return (hex[num]);
+	hex[limit] = '\0';
+	if (isupp)
+		toletter = 55;
 	else
-		return (Hex[num]);
-	return (0);
+		toletter = 87;
+	for (i = (limit * 4) - 1; i >= 0; i--)
+	{
+		for (op = 0, j = 1; j <= 8; j *= 2, i--)
+			op = ((bnr[i] - '0') * j) + op;
+		i++;
+		if (op < 10)
+			hex[i / 4] = op + 48;
+		else
+			hex[i / 4] = op + toletter;
+	}
+	return (hex);
+}
+
+/**
+ * fill_long_oct_array - calculates a long octal number
+ *
+ * @bnr: array where is stored the binary.
+ * @oct: array where is stored the octal.
+ *
+ * Return: binary array.
+ */
+char *fill_long_oct_array(char *bnr, char *oct)
+{
+	int op, i, j, ioct, limit;
+
+	oct[22] = '\0';
+	for (i = 63, ioct = 21; i >= 0; i--, ioct--)
+	{
+		if (i > 0)
+			limit = 4;
+		else
+			limit = 1;
+		for (op = 0, j = 1; j <= limit; j *= 2, i--)
+			op = ((bnr[i] - '0') * j) + op;
+		i++;
+		oct[ioct] = op + '0';
+	}
+	return (oct);
+}
+
+/**
+ * fill_oct_array - writes the character c to stdout
+ *
+ * @bnr: array where is stored the binary.
+ * @oct: array where is stored the octal.
+ *
+ * Return: binary array.
+ */
+char *fill_oct_array(char *bnr, char *oct)
+{
+	int op, i, j, ioct, limit;
+
+	oct[11] = '\0';
+	for (i = 31, ioct = 10; i >= 0; i--, ioct--)
+	{
+		if (i > 1)
+			limit = 4;
+		else
+			limit = 2;
+		for (op = 0, j = 1; j <= limit; j *= 2, i--)
+			op = ((bnr[i] - '0') * j) + op;
+		i++;
+		oct[ioct] = op + '0';
+	}
+	return (oct);
+}
+
+/**
+ * fill_short_oct_array - calculates a short octal number
+ *
+ * @bnr: array where is stored the binary.
+ * @oct: array where is stored the octal.
+ *
+ * Return: binary array.
+ */
+char *fill_short_oct_array(char *bnr, char *oct)
+{
+	int op, i, j, ioct, limit;
+
+	oct[6] = '\0';
+	for (i = 15, ioct = 5; i >= 0; i--, ioct--)
+	{
+		if (i > 0)
+			limit = 4;
+		else
+			limit = 1;
+		for (op = 0, j = 1; j <= limit; j *= 2, i--)
+			op = ((bnr[i] - '0') * j) + op;
+		i++;
+		oct[ioct] = op + '0';
+	}
+	return (oct);
 }
