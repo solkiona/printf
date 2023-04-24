@@ -6,16 +6,17 @@
 #include <stdarg.h>
 
 /**
-* struct switch_va - defines a structure for symbols and functions
+* struct switch_var - defines a structure for symbols and functions
 *
 * @_case: The operator
 * @call_func: The function associated
 */
-typedef struct switch_va
+typedef struct switch_var
 {
 	char *_case;
 	int (*call_func)(va_list);
-} switch_va;
+};
+typedef struct switch_var switch_va;
 
 /*Main functions*/
 int decode(const char *format, switch_va switch_case[], va_list varList);
