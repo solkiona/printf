@@ -11,7 +11,7 @@
 * @_case: The operator
 * @call_func: The function associated
 */
-typedef struct switch_var
+struct switch_var
 {
 	char *_case;
 	int (*call_func)(va_list);
