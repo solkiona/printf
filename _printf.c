@@ -10,7 +10,7 @@ int _printf(const char *format, ...)
 {
 	int printed_chars;
 	conver_t f_list[] = {
-		{"c", print_char},{"p", print_add},
+		{"c", print_char},
 		{"s", print_string},
 		{"%", print_percent},
 		{"d", print_integer},
@@ -22,6 +22,7 @@ int _printf(const char *format, ...)
 		{"o", print_octal},
 		{"x", print_hex},
 		{"X", print_heX},
+		{"p", print_add},
 		{NULL, NULL}
 	};
 	va_list arg_list;
