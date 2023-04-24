@@ -1,4 +1,6 @@
 #include "main.h"
+#include <stdint.h>
+#define PRINT_ADD_BUFFER_SIZE 1024
 
 /**
  * print_add - prints the address of a pointer
@@ -7,25 +9,28 @@
  */
 int print_add(va_list list)
 {
-        void *ptr = va_arg(list, void*);
-        char buffer[1024];
-        int index = 0;
-
+	void *ptr = va_arg(list, void*);
+	char buffer[PRINT_ADD_BUFFER_SIZE];
+	int index = 0;
 /*Convert the pointer value to a string*/
-        uintptr_t address = (uintptr_t)ptr;
 
-        do {
-                buffer[index++] = "0123456789abcdef"[address % 16];
-                address /= 16;
-        } while (address != 0);
+	uintptr_t address = (uintptr_t)ptr;
+
+	do {
+		buffer[index++] = "0123456789abcdef"[address % 16];
+		address /= 16;
+	} while (address != 0);
+
+	if (index >= PRINT_ADD_BUFFER_SIZE)
+		return (-1);
 
 /*Print the string in reverse order*/
-        int printed_chars = 0;
+	int printed_chars = 0;
 
-        for (int i = index - 1; i >= 0; i--)
-        {
-                _write_char(buffer[i]);
-                printed_chars++;
-        }
-        return (printed_chars);
+	for (int i = index - 1; i >= 0; i--)
+	{
+		_write_char(buffer[i]);
+		printed_chars++;
+	}
+	return (printed_chars);
 }
